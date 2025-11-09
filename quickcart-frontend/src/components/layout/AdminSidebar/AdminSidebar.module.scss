@@ -1,0 +1,76 @@
+/* A simple, clean sidebar style */
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  background-color: var(--color-white);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.logo {
+  padding: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.navList {
+  list-style: none;
+  padding: 1rem 0;
+  margin: 0;
+  flex-grow: 1;
+
+  li {
+    width: 100%;
+  }
+
+  a {
+    display: block;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background-color: #f4f6f8;
+      color: var(--color-primary);
+    }
+
+    &.active {
+      color: var(--color-primary);
+      font-weight: 600;
+      border-left: 4px solid var(--color-primary);
+      padding-left: calc(1.5rem - 4px);
+    }
+  }
+}
+
+.footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.logoutButton {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #d9534f;
+  background-color: #fde8e8;
+  border: 1px solid #d9534f;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #d9534f;
+    color: var(--color-white);
+  }
+}

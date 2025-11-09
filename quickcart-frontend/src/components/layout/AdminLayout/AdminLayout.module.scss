@@ -1,0 +1,11 @@
+.adminLayout {
+  display: flex;
+}
+
+.content {
+  /* The sidebar is 240px wide */
+  margin-left: 240px;
+  padding: 2rem;
+  flex-grow: 1;
+  width: calc(100% - 240px);
+}
