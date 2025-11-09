@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    // --- Environment Settings ---
+    "target": "esnext",
+    "lib": ["esnext"], // <-- Enabled for modern JS features
+    "module": "nodenext",
+    "moduleResolution": "nodenext", // <-- Added to work with "nodenext"
+    "types": ["node"], // <-- CRITICAL: Changed from [] to ["node"]
+
+    // --- Module Interop ---
+    "esModuleInterop": true, // <-- Added for better module compatibility
+    "verbatimModuleSyntax": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleDetection": "force",
+    
+    // --- Stricter Typechecking Options ---
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // --- Other Outputs ---
+    "sourceMap": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+
+    // --- REMOVED ---
+    // "jsx": "react-jsx" // <-- Removed, this is not a React project
+  },
+  "include": ["src"] // <-- Added to specify our source directory
+}

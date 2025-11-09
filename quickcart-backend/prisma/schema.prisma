@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL") // This loads from your .env file
+}
+
+// Enum for user roles, based on your PPT's admin dashboard
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  DELIVERY_PARTNER
+}
+
+// Enum for order status, crucial for live tracking
+enum OrderStatus {
+  PENDING     // Order placed
+  PROCESSING  // Dark store is packing
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+// User model for customers, admins, and partners
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String     // This will be a hashed password
+  firstName String
+  lastName  String
+  phone     String?
+  role      UserRole   @default(CUSTOMER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  profile   Profile?   // Link to user profile (address)
+  orders    Order[]    // A customer can have many orders
+  partner   DeliveryPartner? // Link if this user is a delivery partner
+}
+
+// Profile model for storing user addresses
+model Profile {
+  id        String   @id @default(cuid())
+  street    String
+  city      String
+  state     String
+  zipCode   String
+  isDefault Boolean  @default(true)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique // One-to-one with User
+}
+
+// Product categories
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+}
+
+// The products we are selling
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String?     @db.Text
+  price       Float
+  imageUrl    String?
+  sku         String      @unique // Stock Keeping Unit
+  category    Category?   @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  orderItems  OrderItem[]
+  inventory   Inventory[] // Stock levels for this product
+}
+
+// Hyperlocal Dark Stores
+model DarkStore {
+  id        String      @id @default(cuid())
+  name      String      // e.g., "Urban Core North"
+  latitude  Float
+  longitude Float
+  city      String
+  inventory Inventory[] // Products stocked in this store
+  orders    Order[]     // Orders assigned to this store
+}
+
+// AI-Driven Inventory: Links a Product to a DarkStore with a stock level
+model Inventory {
+  id          String    @id @default(cuid())
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   String
+  darkStore   DarkStore @relation(fields: [darkStoreId], references: [id])
+  darkStoreId String
+  quantity    Int       // The actual stock level
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([productId, darkStoreId]) // A product can only appear once per store
+}
+
+// Customer's order
+model Order {
+  id              String      @id @default(cuid())
+  customer        User        @relation(fields: [customerId], references: [id])
+  customerId      String
+  status          OrderStatus @default(PENDING)
+  totalPrice      Float
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[] // List of products in the order
+  assignedStore   DarkStore?  @relation(fields: [darkStoreId], references: [id])
+  darkStoreId     String?     // Which store is fulfilling it
+  deliveryPartner DeliveryPartner? @relation(fields: [deliveryPartnerId], references: [id])
+  deliveryPartnerId String?   // Which partner is delivering it
+}
+
+// A specific item within an order
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Float   // Price at the time of purchase
+}
+
+// Delivery Partner Network
+model DeliveryPartner {
+  id            String  @id @default(cuid())
+  user          User    @relation(fields: [userId], references: [id])
+  userId        String  @unique // Links to a User account
+  isAvailable   Boolean @default(false)
+  currentLat    Float?
+  currentLng    Float?
+  orders        Order[] // Orders assigned to this partner
+  rating        Float?
+}
